@@ -38,7 +38,10 @@ class BlocCamera {
     }
 
     try {
+      await controllCamera.flash(true);
+      await Future.delayed(Duration(milliseconds: 500));
       await controllCamera.takePicture(filePath);
+      await controllCamera.flash(false);
     } on CameraException catch (e) {
       print(e);
       return null;
@@ -59,8 +62,7 @@ class BlocCamera {
     if (controllCamera != null) {
       await controllCamera.dispose();
     }
-    controllCamera =
-        CameraController(cameraDescription, ResolutionPreset.medium);
+    controllCamera = CameraController(cameraDescription, ResolutionPreset.medium);
     controllCamera.addListener(() {
       if (controllCamera.value.hasError) selectCamera.sink.add(false);
     });
@@ -82,16 +84,11 @@ class BlocCamera {
 
       debugPrint('LOGX: ${list.length}');
       if (list.length > 1) {
-        var listCameraFront = list
-            .where((val) => val.lensDirection == CameraLensDirection.front)
-            .toList();
+        var listCameraFront = list.where((val) => val.lensDirection == CameraLensDirection.front).toList();
 
-        var listCameraBack = list
-            .where((val) => val.lensDirection == CameraLensDirection.back)
-            .toList();
+        var listCameraBack = list.where((val) => val.lensDirection == CameraLensDirection.back).toList();
 
-        if (controllCamera.description.lensDirection ==
-            CameraLensDirection.back) {
+        if (controllCamera.description.lensDirection == CameraLensDirection.back) {
           debugPrint('LOGX: Frontal selected');
           await onNewCameraSelected(listCameraFront[0]);
           cameraOn.sink.add(list.indexOf(listCameraFront[0]));

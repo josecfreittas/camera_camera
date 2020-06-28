@@ -15,14 +15,14 @@ enum CameraSide { front, back }
 
 class Camera extends StatefulWidget {
   final Widget imageMask;
+  final bool hideCaptureButton;
   final CameraMode mode;
   final Widget warning;
   final CameraOrientation orientationEnablePhoto;
   final Function(File image) onFile;
   final bool enableCameraChange;
   final CameraSide initialCamera;
-  final Function(CameraLensDirection direction, List<CameraDescription> cameras)
-      onChangeCamera;
+  final Function(CameraLensDirection direction, List<CameraDescription> cameras) onChangeCamera;
 
   const Camera({
     Key key,
@@ -34,6 +34,7 @@ class Camera extends StatefulWidget {
     this.onChangeCamera,
     this.initialCamera = CameraSide.back,
     this.enableCameraChange = true,
+    this.hideCaptureButton = false,
   }) : super(key: key);
   @override
   _CameraState createState() => _CameraState();
@@ -98,8 +99,7 @@ class _CameraState extends State<Camera> {
     return NativeDeviceOrientationReader(
       useSensor: true,
       builder: (context) {
-        NativeDeviceOrientation orientation =
-            NativeDeviceOrientationReader.orientation(context);
+        NativeDeviceOrientation orientation = NativeDeviceOrientationReader.orientation(context);
 
         _buttonPhoto() => CircleAvatar(
               child: IconButton(
@@ -122,10 +122,8 @@ class _CameraState extends State<Camera> {
         Widget _getButtonPhoto() {
           if (widget.orientationEnablePhoto == CameraOrientation.all) {
             return _buttonPhoto();
-          } else if (widget.orientationEnablePhoto ==
-              CameraOrientation.landscape) {
-            if (orientation == NativeDeviceOrientation.landscapeLeft ||
-                orientation == NativeDeviceOrientation.landscapeRight)
+          } else if (widget.orientationEnablePhoto == CameraOrientation.landscape) {
+            if (orientation == NativeDeviceOrientation.landscapeLeft || orientation == NativeDeviceOrientation.landscapeRight)
               return _buttonPhoto();
             else
               return Container(
@@ -133,8 +131,7 @@ class _CameraState extends State<Camera> {
                 height: 0.0,
               );
           } else {
-            if (orientation == NativeDeviceOrientation.portraitDown ||
-                orientation == NativeDeviceOrientation.portraitUp)
+            if (orientation == NativeDeviceOrientation.portraitDown || orientation == NativeDeviceOrientation.portraitUp)
               return _buttonPhoto();
             else
               return Container(
@@ -144,8 +141,7 @@ class _CameraState extends State<Camera> {
           }
         }
 
-        if (orientation == NativeDeviceOrientation.portraitDown ||
-            orientation == NativeDeviceOrientation.portraitUp) {
+        if (orientation == NativeDeviceOrientation.portraitDown || orientation == NativeDeviceOrientation.portraitUp) {
           sizeImage = Size(width, height);
         } else {
           sizeImage = Size(height, width);
@@ -170,8 +166,7 @@ class _CameraState extends State<Camera> {
                             child: SizedBox(
                               height: sizeImage.height,
                               width: sizeImage.height,
-                              child: Image.file(snapshot.data,
-                                  fit: BoxFit.contain),
+                              child: Image.file(snapshot.data, fit: BoxFit.contain),
                             ),
                           );
                         } else {
@@ -183,25 +178,17 @@ class _CameraState extends State<Camera> {
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
                                         if (snapshot.data) {
-                                          previewRatio = bloc
-                                              .controllCamera.value.aspectRatio;
+                                          previewRatio = bloc.controllCamera.value.aspectRatio;
 
-                                          return widget.mode ==
-                                                  CameraMode.fullscreen
+                                          return widget.mode == CameraMode.fullscreen
                                               ? OverflowBox(
                                                   maxHeight: size.height,
-                                                  maxWidth: size.height *
-                                                      previewRatio,
-                                                  child: CameraPreview(
-                                                      bloc.controllCamera),
+                                                  maxWidth: size.height * previewRatio,
+                                                  child: CameraPreview(bloc.controllCamera),
                                                 )
                                               : AspectRatio(
-                                                  aspectRatio: bloc
-                                                      .controllCamera
-                                                      .value
-                                                      .aspectRatio,
-                                                  child: CameraPreview(
-                                                      bloc.controllCamera),
+                                                  aspectRatio: bloc.controllCamera.value.aspectRatio,
+                                                  child: CameraPreview(bloc.controllCamera),
                                                 );
                                         } else {
                                           return Container();
@@ -230,15 +217,13 @@ class _CameraState extends State<Camera> {
                           builder: (context, snapshot) {
                             return snapshot.hasData
                                 ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
                                       CircleAvatar(
                                         child: IconButton(
                                           icon: OrientationWidget(
                                             orientation: orientation,
-                                            child: Icon(Icons.close,
-                                                color: Colors.white),
+                                            child: Icon(Icons.close, color: Colors.white),
                                           ),
                                           onPressed: () {
                                             bloc.deletePhoto();
@@ -251,16 +236,13 @@ class _CameraState extends State<Camera> {
                                         child: IconButton(
                                           icon: OrientationWidget(
                                             orientation: orientation,
-                                            child: Icon(Icons.check,
-                                                color: Colors.white),
+                                            child: Icon(Icons.check, color: Colors.white),
                                           ),
                                           onPressed: () {
                                             if (widget.onFile == null)
-                                              Navigator.pop(context,
-                                                  bloc.imagePath.value);
+                                              Navigator.pop(context, bloc.imagePath.value);
                                             else {
-                                              widget
-                                                  .onFile(bloc.imagePath.value);
+                                              widget.onFile(bloc.imagePath.value);
                                             }
                                           },
                                         ),
@@ -270,15 +252,13 @@ class _CameraState extends State<Camera> {
                                     ],
                                   )
                                 : Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
                                       CircleAvatar(
                                         child: IconButton(
                                           icon: OrientationWidget(
                                             orientation: orientation,
-                                            child: Icon(Icons.arrow_back_ios,
-                                                color: Colors.white),
+                                            child: Icon(Icons.arrow_back_ios, color: Colors.white),
                                           ),
                                           onPressed: () {
                                             Navigator.pop(context);
@@ -287,7 +267,10 @@ class _CameraState extends State<Camera> {
                                         backgroundColor: Colors.black38,
                                         radius: 25.0,
                                       ),
-                                      _getButtonPhoto(),
+                                      Visibility(
+                                        visible: !widget.hideCaptureButton,
+                                        child: _getButtonPhoto(),
+                                      ),
                                       (widget.enableCameraChange)
                                           ? CircleAvatar(
                                               child: RotateIcon(
@@ -305,8 +288,7 @@ class _CameraState extends State<Camera> {
                                             )
                                           : CircleAvatar(
                                               child: Container(),
-                                              backgroundColor:
-                                                  Colors.transparent,
+                                              backgroundColor: Colors.transparent,
                                               radius: 25.0,
                                             ),
                                     ],
@@ -327,15 +309,13 @@ class _CameraState extends State<Camera> {
                         builder: (context, snapshot) {
                           return snapshot.hasData
                               ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     CircleAvatar(
                                       child: IconButton(
                                         icon: OrientationWidget(
                                           orientation: orientation,
-                                          child: Icon(Icons.close,
-                                              color: Colors.white),
+                                          child: Icon(Icons.close, color: Colors.white),
                                         ),
                                         onPressed: () {
                                           bloc.deletePhoto();
@@ -348,13 +328,11 @@ class _CameraState extends State<Camera> {
                                       child: IconButton(
                                         icon: OrientationWidget(
                                           orientation: orientation,
-                                          child: Icon(Icons.check,
-                                              color: Colors.white),
+                                          child: Icon(Icons.check, color: Colors.white),
                                         ),
                                         onPressed: () {
                                           if (widget.onFile == null)
-                                            Navigator.pop(
-                                                context, bloc.imagePath.value);
+                                            Navigator.pop(context, bloc.imagePath.value);
                                           else {
                                             widget.onFile(bloc.imagePath.value);
                                           }
@@ -366,15 +344,13 @@ class _CameraState extends State<Camera> {
                                   ],
                                 )
                               : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     CircleAvatar(
                                       child: IconButton(
                                         icon: OrientationWidget(
                                           orientation: orientation,
-                                          child: Icon(Icons.arrow_back_ios,
-                                              color: Colors.white),
+                                          child: Icon(Icons.arrow_back_ios, color: Colors.white),
                                         ),
                                         onPressed: () {
                                           Navigator.pop(context);
@@ -383,7 +359,10 @@ class _CameraState extends State<Camera> {
                                       backgroundColor: Colors.black38,
                                       radius: 25.0,
                                     ),
-                                    _getButtonPhoto(),
+                                    Visibility(
+                                      visible: !widget.hideCaptureButton,
+                                      child: _getButtonPhoto(),
+                                    ),
                                     (widget.enableCameraChange)
                                         ? CircleAvatar(
                                             child: RotateIcon(
