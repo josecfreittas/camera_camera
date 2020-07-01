@@ -18,9 +18,11 @@ packages:
   camera:
     dependency: transitive
     description:
-      path: "../camera"
-      relative: true
-    source: path
+      path: "packages/camera"
+      ref: flash_light
+      resolved-ref: fd7cffb44b0f86f5e467180c62cea44df7172651
+      url: "git://github.com/Renesanse/plugins.git"
+    source: git
     version: "0.5.7+3"
   camera_camera:
     dependency: "direct main"
@@ -223,7 +225,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.15"
+    version: "0.2.16"
   typed_data:
     dependency: transitive
     description:
