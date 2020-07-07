@@ -39,7 +39,6 @@ class BlocCamera {
 
     try {
       await controllCamera.flash(true);
-      await Future.delayed(Duration(milliseconds: 500));
       await controllCamera.takePicture(filePath);
       await controllCamera.flash(false);
     } on CameraException catch (e) {
